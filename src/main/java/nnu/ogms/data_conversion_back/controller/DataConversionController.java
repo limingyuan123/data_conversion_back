@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -81,7 +82,18 @@ public class DataConversionController {
     @RequestMapping(value = "/udxVisual", method = RequestMethod.GET)
     public JsonResult udxVisual(@RequestParam(value = "udxData") MultipartFile udxData){
         JsonResult jsonResult = new JsonResult();
+
+
         return jsonResult;
+    }
+
+    @RequestMapping(value = "/operation/{id}", method = RequestMethod.GET)
+    public ModelAndView loadOperation(@PathVariable(value = "id") String id){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("operation/operation");
+        Template template = templateDao.findFirstByOid(id);
+        modelAndView.addObject("info", template);
+        return modelAndView;
     }
 
 }

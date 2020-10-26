@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${info.name}">Title</title>
+    <link rel="stylesheet" href="/static/element-ui/theme-chalk/index.css">
+    <link rel="stylesheet" href="/static/css/operation/operation.css">
+</head>
+<body>
+<div id="app">
+
+    <div>
+        <!-- menu -->
+        <img
+                src="/static/images/OGMS.png"
+                id="logo"
+                class="pic"
+                style="cursor:pointer;"
+        />
+        <!-- header -->
+        <div>
+            <el-menu
+                    :default-active="activeNavIndex"
+                    class="el-menu-demo"
+                    mode="horizontal"
+                    @select="handleSelect"
+                    background-color="#545c64"
+                    text-color="#fff"
+                    active-text-color="#ffd04b"
+            >
+                <el-menu-item index="1" style="margin-left:20%" @click="turnToHome"
+                >Home
+                </el-menu-item
+                >
+                <el-menu-item index="2" @click="turnToTemplate"
+                >Template
+                </el-menu-item
+                >
+                <el-submenu index="3">
+                    <template slot="title">My workspace</template>
+                    <el-menu-item index="3-1">option1</el-menu-item>
+                    <el-menu-item index="3-2">option2</el-menu-item>
+                    <el-menu-item index="3-3">option3</el-menu-item>
+                </el-submenu>
+                <el-menu-item index="4"
+                ><a href="http://opengmsteam.com/" target="_blank"
+                >About us</a
+                ></el-menu-item
+                >
+                <el-menu-item index="5" style="margin-left: 30%;">
+                    <span slot="title" @click="turnToLogin">Login</span>
+                </el-menu-item>
+                <el-menu-item index="6">
+                    <span slot="title" @click="turnToSign">Sign up</span>
+                </el-menu-item>
+            </el-menu>
+        </div>
+        <router-view></router-view>
+        <!-- end -->
+        <div id="footer" style="bottom: 0px;width: 100%;">
+            <footer data-v-0ef2f3f6="">
+                <h2 data-v-0ef2f3f6="" class="footerTop" style="margin-bottom: 0px;">
+                    <i data-v-0ef2f3f6="" style="font-size:initial"
+                    >Open Geographic Modeling and Simulation</i
+                    >
+                </h2>
+                <p data-v-0ef2f3f6="" class="footerBottom" style="margin-top: 1px;">
+                    Copyright © 2013-2020 OpenGMS. All rights reserved.
+                </p>
+            </footer>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/static/js/common/axios.min.js"></script>
+<script src="/static/js/common/vue.min.js"></script>
+<script src="/static/element-ui/index.js"></script>
+<script src="/static/element-ui/umd/locale/en.js"></script>
+<script src="/static/js/operation/operation.js"></script>
+</html>
