@@ -1,10 +1,15 @@
 package nnu.ogms.data_conversion_back.controller;
 
-import com.mongodb.client.model.ValidationLevel;
 import lombok.extern.slf4j.Slf4j;
 import nnu.ogms.data_conversion_back.bean.JsonResult;
+import nnu.ogms.data_conversion_back.dao.DatamapDao;
+import nnu.ogms.data_conversion_back.dao.RefactorDao;
 import nnu.ogms.data_conversion_back.dao.TemplateDao;
+import nnu.ogms.data_conversion_back.dao.VisualizationDao;
+import nnu.ogms.data_conversion_back.entity.Datamap;
+import nnu.ogms.data_conversion_back.entity.Refactor;
 import nnu.ogms.data_conversion_back.entity.Template;
+import nnu.ogms.data_conversion_back.entity.Visualization;
 import nnu.ogms.data_conversion_back.service.DataConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,9 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
+
+import static nnu.ogms.data_conversion_back.utils.Tools.JsonToXml;
+import static nnu.ogms.data_conversion_back.utils.Tools.xmlToJson;
 
 /**
  * @Author mingyuan
@@ -31,6 +37,15 @@ public class DataConversionController {
 
     @Autowired
     DataConversionService dataConversionService;
+
+    @Autowired
+    DatamapDao dataMapDao;
+
+    @Autowired
+    RefactorDao refactorDao;
+
+    @Autowired
+    VisualizationDao visualizationDao;
 
     @RequestMapping(value = "/getTemplate/{page}", method = RequestMethod.GET)
     public JsonResult getTemplate(@PathVariable("page") int page){
@@ -70,7 +85,6 @@ public class DataConversionController {
         JsonResult jsonResult = new JsonResult();
         //解析原始数据,匹配udxSchema生成udxData
         jsonResult = dataConversionService.rawToUdx(raw, udxSchema);
-
         return jsonResult;
     }
 
@@ -94,6 +108,44 @@ public class DataConversionController {
         Template template = templateDao.findFirstByOid(id);
         modelAndView.addObject("info", template);
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/getDataMap/{type}", method = RequestMethod.GET)
+    public JsonResult getDataMap(@PathVariable(value = "type") String type){
+        JsonResult jsonResult = new JsonResult();
+        if (type.equals("map")) {
+            List<Datamap> dataMaps = dataMapDao.findAll();
+            jsonResult.setData(dataMaps);
+        }else if (type.equals("refactor")){
+            List<Refactor> refactors = refactorDao.findAll();
+            jsonResult.setData(refactors);
+        }else {
+            List<Visualization> visualizations = visualizationDao.findAll();
+            jsonResult.setData(visualizations);
+        }
+        return jsonResult;
+    }
+
+    /**
+     * test xml-json
+     */
+    @RequestMapping(value = "/xmlToJSON", method = RequestMethod.GET)
+    public String xmlToJSON(@RequestParam(value = "xml") String xml){
+        String res = xmlToJson(xml);
+        log.info(res+"");
+        return res;
+    }
+
+    /**
+     * json-xml
+     * @param json
+     * @return
+     */
+    @RequestMapping(value = "/jsonToXML", method = RequestMethod.GET)
+    public String jsonToXML(@RequestParam(value = "json") String json){
+        String res = JsonToXml(json);
+        log.info(res+"");
+        return res;
     }
 
 }

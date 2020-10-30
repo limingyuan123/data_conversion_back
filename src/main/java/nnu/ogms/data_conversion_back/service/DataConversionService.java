@@ -1,6 +1,7 @@
 package nnu.ogms.data_conversion_back.service;
 
 import com.sun.el.lang.ELArithmetic;
+import com.sun.org.apache.regexp.internal.RE;
 import lombok.extern.slf4j.Slf4j;
 import nnu.ogms.data_conversion_back.bean.JsonResult;
 import nnu.ogms.data_conversion_back.dao.TemplateDao;
@@ -46,6 +47,14 @@ public class DataConversionService {
      */
     public JsonResult rawToUdx(MultipartFile raw, String udxSchema) {
         JsonResult jsonResult = new JsonResult();
+        //ascii原始数据转udx
+
+        //分析udxSchema节点
+        parseSchema(udxSchema);
+
+        //由原始数据匹配节点
+        //映射到udxData节点
+
         String udxData = "<Dataset><XDO name=\"head\" kernelType=\"any\">";
 
         ArrayList<String> headString = new ArrayList<>();
@@ -128,6 +137,45 @@ public class DataConversionService {
                 e.printStackTrace();
             }
         }
+
+
+        return jsonResult;
+    }
+
+    /**
+     * 解析schema
+     * @param udxSchema 待解析的schema
+     * @return 解析后的结构
+     */
+    public JsonResult parseSchema(String udxSchema){
+        JsonResult jsonResult = new JsonResult();
+
+        ArrayList<String> headString = new ArrayList<>();
+        ArrayList<String> bodyString = new ArrayList<>();
+        //解析xml
+        try {
+            Document schema = DocumentHelper.parseText(udxSchema);
+            //获取根元素
+            Element root = schema.getRootElement();
+            List<Element> father = root.element("UdxNode").elements();
+            Element rootHead = father.get(0);
+            Element rootBody = father.get(1);
+            List<Element> head = rootHead.elements();
+            List<Element> body = rootBody.elements();
+            try {
+                for (Element ele : head) {
+                    headString.add(ele.attributeValue("name"));
+                }
+                for (Element ele:body){
+                    bodyString.add(ele.attributeValue("name"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
 
 
         return jsonResult;
