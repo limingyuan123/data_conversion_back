@@ -6,6 +6,9 @@ import de.odysseus.staxon.json.JsonXMLConfigBuilder;
 import de.odysseus.staxon.json.JsonXMLInputFactory;
 import de.odysseus.staxon.json.JsonXMLOutputFactory;
 import de.odysseus.staxon.xml.util.PrettyXMLEventWriter;
+import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONArray;
+import net.sf.json.xml.XMLSerializer;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -27,13 +30,15 @@ import java.util.regex.Pattern;
  * @Author mingyuan
  * @Date 2020.10.30 11:12
  */
+@Slf4j
 public class Tools {
     /**
      * xml convert to json
+     *
      * @param xmlString
      * @return
      */
-    public static String xmlToJson(String xmlString){
+    public static String xmlToJson(String xmlString) {
         StringReader input = new StringReader(xmlString);
         StringWriter output = new StringWriter();
         JsonXMLConfig config = new JsonXMLConfigBuilder().autoArray(true).autoPrimitive(true).prettyPrint(true).build();
@@ -58,10 +63,11 @@ public class Tools {
 
     /**
      * json convert to xml
+     *
      * @param jsonString
      * @return
      */
-    public static String JsonToXml(String jsonString){
+    public static String JsonToXml(String jsonString) {
         StringReader input = new StringReader(jsonString);
         StringWriter output = new StringWriter();
         JsonXMLConfig config = new JsonXMLConfigBuilder().multiplePI(false).repairingNamespaces(false).build();
@@ -72,7 +78,7 @@ public class Tools {
             writer.add(reader);
             reader.close();
             writer.close();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
@@ -91,6 +97,7 @@ public class Tools {
 
     /**
      * 去掉xml中的换行和空格
+     *
      * @param jsonString
      * @return
      */
@@ -103,5 +110,25 @@ public class Tools {
             dest = m.replaceAll("");
         }
         return dest;
+    }
+
+    public static String jsonToXML(String json) {
+        XMLSerializer xmlSerializer = new XMLSerializer();
+        // 根节点名称
+        xmlSerializer.setRootName("xml");
+        // 不对类型进行设置
+        xmlSerializer.setTypeHintsEnabled(false);
+        String xmlStr = "";
+        if (json.contains("[") && json.contains("]")) {
+            // jsonArray
+            JSONArray jobj = JSONArray.fromObject(json);
+            xmlStr = xmlSerializer.write(jobj);
+        } else {
+            // jsonObject
+            net.sf.json.JSONObject jobj = net.sf.json.JSONObject.fromObject(json);
+            xmlStr = xmlSerializer.write(jobj);
+        }
+        log.info("转换后的参数：" + xmlStr);
+        return xmlStr;
     }
 }
